@@ -30,9 +30,15 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
+const fs = require('fs').promises;
+
 // Update report (for EditReportForm)
 router.patch('/:id', auth, upload.single('image'), async (req, res) => {
   try {
+    console.log('Updating report:', req.params.id);
+    console.log('Request body:', req.body);
+    console.log('File:', req.file);
+
     const report = await Report.findById(req.params.id);
     if (!report) {
       return res.status(404).json({ message: 'Report not found' });
@@ -49,25 +55,38 @@ router.patch('/:id', auth, upload.single('image'), async (req, res) => {
     if (req.file) {
       // Delete old image if it exists
       if (report.imagePath) {
-        fs.unlink(report.imagePath, (err) => {
-          if (err) console.error('Error deleting old image:', err);
-        });
+        try {
+          await fs.unlink(report.imagePath);
+          console.log('Old image deleted successfully');
+        } catch (err) {
+          console.error('Error deleting old image:', err);
+        }
       }
       updateData.imagePath = req.file.path;
     }
 
+    console.log('Update data:', updateData);
+
     const updatedReport = await Report.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true }
+      { new: true, runValidators: true }
     );
+
+    if (!updatedReport) {
+      return res.status(404).json({ message: 'Report not found after update' });
+    }
+
+    console.log('Updated report:', updatedReport);
 
     req.io.emit('updateReport', updatedReport);
     res.json(updatedReport);
   } catch (error) {
-    res.status(400).json({ message: 'Error updating report', error: error.message });
+    console.error('Error updating report:', error);
+    res.status(400).json({ message: 'Error updating report', error: error.message, stack: error.stack });
   }
 });
+
 
 // Create a new report with image upload
 router.post('/', auth, upload.single('image'), async (req, res) => {
@@ -87,6 +106,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     req.io.emit('newReport', report);
     res.status(201).json(report);
   } catch (error) {
+    console.error('Error creating report:', error);
     res.status(400).json({ message: 'Error creating report', error: error.message });
   }
 });
