@@ -20,7 +20,7 @@ const HomePage = () => {
               <h1 className="text-3xl md:text-5xl font-bold text-purple-800 mb-4">Maintenance UP</h1>
               <h2 className="text-2xl md:text-3xl font-semibold text-black mb-4">ACTION-PROVOKING</h2>
               <p className="text-lg md:text-xl text-black mb-8">TO HELP YOU GROW AUDIENCE</p>
-              <p className="mb-8 text-black text-sm md:text-base">เว็ปไซต์สำหรับ รายงานสิ่งของชำรุดออนไลน์ภายในมหาวิทลัยพะเยา ผู้แจ้งซ่อมสามารถแจ้งผ่านหน้าเว็ปไซต์ สามารถระบุรายละเอียดการแจ้งซ่อมได้และสามารถดูสถานะของการซ่อมบำรุงอีกทั้งยังมีบันทึกข้อมูลการรายงานและรับแจ้งเตือนการอัพเดทสถานะจากแอดมิน</p>
+              <p className="mb-8 text-black text-sm md:text-base">เว็บไซต์สำหรับรายงานสิ่งของชำรุดออนไลน์ภายในมหาวิทยาลัยพะเยา เป็นแพลตฟอร์มที่ช่วยให้ผู้แจ้งซ่อมสามารถรายงานปัญหาผ่านหน้าเว็บไซต์ได้อย่างสะดวก โดยผู้ใช้งานสามารถกรอกรายละเอียดเกี่ยวกับการแจ้งซ่อมได้ตามต้องการ นอกจากนี้ยังสามารถติดตามสถานะของการซ่อมบำรุงได้อีกด้วย</p>
             </div>
             
             <div className="w-full lg:w-1/2 flex flex-col items-center">

@@ -1,26 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const ProgressReportLayout = () => {
-  const [counts, setCounts] = useState({
-    totalReports: 0,
-    approved: 0,
-    inProgress: 0,
-    completed: 0
-  });
+  const [reports, setReports] = useState([]);
+  const [, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  const fetchReports = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/reports');
+      setReports(response.data);
+      setError('');
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      setError('Failed to fetch reports. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const response = await api.get('/reports/counts');
-        setCounts(response.data);
-      } catch (error) {
-        console.error('Error fetching report counts:', error);
-      }
-    };
+    fetchReports();
+  }, [fetchReports]);
 
-    fetchCounts();
-  }, []);
+  const getCounts = () => {
+    return {
+      totalReports: reports.length,
+      userReports: user ? reports.filter(report => report.createdBy === user._id).length : 0,
+      inProgress: reports.filter(report => report.status === 'กำลังดำเนินการ').length,
+      completed: reports.filter(report => report.status === 'เสร็จสิ้น').length
+    };
+  };
+
+  const counts = getCounts();
+
+  if (loading) {
+    return <div className="text-center mt-8">กำลังโหลด...</div>;
+  }
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-white to-purple-400 flex items-center justify-center p-4 pt-[100px] overflow-x-hidden">
@@ -40,7 +59,6 @@ const ProgressReportLayout = () => {
           <img src="/icons/gear.png" alt="Decorative gear" className="w-full h-full object-contain transform scale-100" />
         </div>
         
-        
         {/* Main content */}
         <div className="relative z-10 text-center mb-12 flex items-center justify-center mt-24">
           <div>
@@ -57,44 +75,46 @@ const ProgressReportLayout = () => {
           <StatItem
             icon={<BellIcon className="w-8 md:w-12 h-8 md:h-12 text-red-500" />}
             value={counts.totalReports}
-            label="Report"
+            label="รายงานทั้งหมด"
             dotColor="bg-red-500"
+            description="จำนวนรายงานทั้งหมดในระบบ"
           />
           <StatItem
-            icon={<BookmarkIcon className="w-8 md:w-12 h-8 md:h-12 text-green-500" />}
-            value={counts.approved}
-            label="Approved"
-            dotColor="bg-green-500"
+            icon={<BookmarkIcon className="w-8 md:w-12 h-8 md:h-12 text-blue-500" />}
+            value={counts.userReports}
+            label="รายงานของคุณ"
+            dotColor="bg-blue-500"
+            description={user ? "จำนวนรายงานที่คุณสร้าง" : "กรุณาเข้าสู่ระบบเพื่อดูรายงานของคุณ"}
           />
           <StatItem
             icon={<GearIcon className="w-8 md:w-12 h-8 md:h-12 text-yellow-500" />}
             value={counts.inProgress}
-            label="In Progress"
+            label="กำลังดำเนินการ"
             dotColor="bg-yellow-500"
+            description="รายงานที่อยู่ระหว่างการดำเนินการ"
           />
           <StatItem
             icon={<CheckIcon className="w-8 md:w-12 h-8 md:h-12 text-green-500" />}
             value={counts.completed}
-            label="Complete"
+            label="เสร็จสิ้น"
             dotColor="bg-green-500"
+            description="รายงานที่ดำเนินการเสร็จสิ้นแล้ว"
           />
-          
-          {/* Decorative tools */}
-          
         </div>
       </div>
     </div>
   );
 };
 
-const StatItem = ({ icon, value, label, dotColor }) => (
+const StatItem = ({ icon, value, label, dotColor, description }) => (
   <div className="flex flex-col items-center w-1/2 md:w-auto mb-6 md:mb-0">
     <div className="mb-3">{icon}</div>
     <div className="text-2xl md:text-4xl font-bold mb-2">{value}</div>
-    <div className="flex items-center">
+    <div className="flex items-center mb-2">
       <div className={`w-3 h-3 rounded-full ${dotColor} mr-2`}></div>
       <div className="text-sm md:text-base text-gray-500">{label}</div>
     </div>
+    <div className="text-xs md:text-sm text-gray-400 text-center">{description}</div>
   </div>
 );
 

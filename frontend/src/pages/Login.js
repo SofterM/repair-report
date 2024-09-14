@@ -51,6 +51,11 @@ const Login = () => {
       login(response.data.user, response.data.token);
       toast.success('เข้าสู่ระบบสำเร็จ');
       navigate('/');
+      
+      // Set a timeout to refresh the page after 1 second
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } catch (error) {
       console.error('Login error:', error.response?.data || error.message);
       setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');

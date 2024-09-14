@@ -120,7 +120,7 @@ const ReportForm = () => {
         }
       });
       toast.success('รายงานถูกส่งเรียบร้อยแล้ว');
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       toast.error('เกิดข้อผิดพลาดในการส่งรายงาน');
     }
@@ -147,8 +147,8 @@ const ReportForm = () => {
       <div className="relative z-10 flex items-center justify-center p-4">
         <div className="bg-white bg-opacity-90 rounded-lg shadow-lg w-full max-w-4xl p-8">
           <div className="flex flex-col items-center mb-8">
-            <img src="/citcomslogo.png" alt="CITCOMS Logo" className="max-w-none h-auto mb-4" />
-            <h1 className="text-3xl font-bold text-purple-600">CITCOMS</h1>
+            <img src="/citcomslogo.png" alt="CITCOMS Logo" className="max-w-none h-40 mb-4" />
+            <h1 className="text-3xl font-bold text-pink-700">CITCOMS</h1>
             <p className="text-center text-gray-600 mt-2 max-w-2xl">
               แจ้งของชำรุดเสียหายภายในมหาวิทยาลัย
               ประกอบไปด้วยไมโครโฟนชำรุด,โปรเจคเตอร์ชำรุด,ลำโพงชำรุด,อินเตอร์เน็ตชำรุดและจอแสดงภาพชำรุด

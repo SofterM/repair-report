@@ -87,7 +87,6 @@ router.patch('/:id', auth, upload.single('image'), async (req, res) => {
   }
 });
 
-
 // Create a new report with image upload
 router.post('/', auth, upload.single('image'), async (req, res) => {
   try {
