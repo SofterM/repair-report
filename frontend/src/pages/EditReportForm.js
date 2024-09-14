@@ -106,6 +106,10 @@ const EditReportForm = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate('/dashboard');
+  };
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -320,13 +324,22 @@ const EditReportForm = () => {
                 className="w-full p-2 border rounded-md border-gray-300"
               />
             </div>
-
+            <div className="flex space-x-24">
             <button 
-              type="submit" 
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-            >
-              บันทึกการแก้ไข
-            </button>
+                type="button" 
+                onClick={handleCancel}
+                className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                ยกเลิก
+              </button>
+            <button 
+                type="submit" 
+                className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              >
+                บันทึกการแก้ไข
+              </button>
+              
+            </div>
           </form>
         </div>
       </div>
