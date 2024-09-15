@@ -9,6 +9,7 @@ const Admin = () => {
   const [notes, setNotes] = useState({});
   const [newNotifications, setNewNotifications] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedDetails, setSelectedDetails] = useState(null);
 
   const fetchReports = useCallback(async () => {
     try {
@@ -113,7 +114,12 @@ const Admin = () => {
                       </div>
                       <div>
                         <p><strong>รายละเอียด:</strong></p>
-                        <p className="mt-1">{report.details}</p>
+                        <div 
+                          className="mt-1 h-32 overflow-y-auto pr-2 cursor-pointer"
+                          onClick={() => setSelectedDetails(report.details)}
+                        >
+                          <p className="whitespace-pre-wrap break-words">{report.details}</p>
+                        </div>
                         {report.note && (
                           <div className="mt-2 bg-yellow-50 p-2 rounded">
                             <p><strong>หมายเหตุ:</strong> {report.note}</p>
@@ -193,6 +199,26 @@ const Admin = () => {
               onClick={(e) => {
                 e.stopPropagation();
                 setSelectedImage(null);
+              }}
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+      {selectedDetails && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" 
+          onClick={() => setSelectedDetails(null)}
+        >
+          <div className="bg-white p-6 rounded-lg max-w-2xl max-h-[80vh] overflow-y-auto relative">
+            <h3 className="text-xl font-bold mb-4">รายละเอียดทั้งหมด</h3>
+            <p className="whitespace-pre-wrap break-words">{selectedDetails}</p>
+            <button 
+              className="absolute top-2 right-2 text-gray-600 text-2xl font-bold hover:text-gray-800"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedDetails(null);
               }}
             >
               &times;
