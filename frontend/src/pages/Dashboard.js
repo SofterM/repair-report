@@ -49,7 +49,6 @@ const Dashboard = () => {
     return () => socket.disconnect();
   }, [fetchReports]);
 
-  // Auto refresh when entering the dashboard
   useEffect(() => {
     fetchReports();
   }, [fetchReports]);
@@ -135,61 +134,83 @@ const Dashboard = () => {
           <>
             <ul className="space-y-4">
               {paginatedReports.map((report) => (
-                <li key={report._id} className="border p-4 rounded shadow bg-white relative">
-                  {isUserReports && (
-                    <div className="absolute top-2 right-2">
-                      <button
-                        onClick={() => setShowMenu(showMenu === report._id ? null : report._id)}
-                        className="text-gray-500 hover:text-gray-700 w-8 h-8 flex items-center justify-center"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                        </svg>
-                      </button>
-                      {showMenu === report._id && (
-                        <div className="absolute top-10 right-0 bg-white p-2 shadow rounded z-10">
-                          <button
-                            onClick={() => editReport(report._id)}
-                            className="block w-full text-left px-2 py-1 hover:bg-gray-100 whitespace-nowrap"
-                          >
-                            แก้ไขรายงาน
-                          </button>
-                          <button
-                            onClick={() => deleteReport(report._id)}
-                            className="block w-full text-left px-2 py-1 hover:bg-gray-100 text-red-500 whitespace-nowrap"
-                          >
-                            ลบรายงาน
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <h4 className="font-bold text-lg">{report.name}</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                    <div>
-                      <p><strong>อาคาร:</strong> {report.building}</p>
-                      <p><strong>เลขห้อง:</strong> {report.roomNumber}</p>
-                      <p><strong>หมวดหมู่:</strong> {report.category}</p>
-                      <p><strong>วันที่รายงาน:</strong> {formatDate(report.reportDate)}</p>
-                      <p>
-                        <strong>สถานะ:</strong>{' '}
-                        <span className={`font-semibold ${
-                          report.status === 'รอดำเนินการ' ? 'text-yellow-600' :
-                          report.status === 'กำลังดำเนินการ' ? 'text-blue-600' :
-                          'text-green-600'
-                        }`}>
-                          {report.status}
+                <li key={report._id} className="border rounded-2xl shadow bg-white relative overflow-hidden">
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <h4 className="font-bold text-lg">{report.name}</h4>
+                      <div className="flex items-center space-x-2">
+                        <span className="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1.5 rounded-full">
+                          {formatDate(report.reportDate)}
                         </span>
-                      </p>
+                        {isUserReports && (
+                          <div className="relative">
+                            <button
+                              onClick={() => setShowMenu(showMenu === report._id ? null : report._id)}
+                              className="text-gray-500 hover:text-gray-700 w-8 h-8 flex items-center justify-center"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                              </svg>
+                            </button>
+                            {showMenu === report._id && (
+                              <div className="absolute top-10 right-0 bg-white p-2 shadow rounded-lg z-10">
+                                <button
+                                  onClick={() => editReport(report._id)}
+                                  className="block w-full text-left px-2 py-1 hover:bg-gray-100 rounded whitespace-nowrap"
+                                >
+                                  แก้ไขรายงาน
+                                </button>
+                                <button
+                                  onClick={() => deleteReport(report._id)}
+                                  className="block w-full text-left px-2 py-1 hover:bg-gray-100 text-red-500 rounded whitespace-nowrap"
+                                >
+                                  ลบรายงาน
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <p><strong>รายละเอียด:</strong></p>
-                      <p className="mt-1">{report.details}</p>
-                      {report.note && (
-                        <div className="mt-2 bg-yellow-50 p-2 rounded">
-                          <p><strong>หมายเหตุ:</strong> {report.note}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p><strong>อาคาร:</strong> {report.building}</p>
+                        <p><strong>เลขห้อง:</strong> {report.roomNumber}</p>
+                        <p><strong>หมวดหมู่:</strong> {report.category}</p>
+                        {report.note && (
+                          <div className="mt-1">
+                            <p className="font-semibold">หมายเหตุ:</p>
+                            <p className="bg-yellow-100 p-2 rounded mt-1">{report.note}</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="h-32 overflow-hidden">
+                        <p className="font-semibold mb-1">รายละเอียด:</p>
+                        <div className="h-24 overflow-y-auto pr-2">
+                          <p className="break-words text-gray-500">{report.details}</p>
                         </div>
-                      )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative h-10 mt-2 mx-6 mb-4">
+                    <div className={`absolute bottom-0 left-0 right-0 h-2 rounded-full bg-gray-200`}>
+                      <div 
+                        className={`absolute top-0 left-0 h-full rounded-full ${
+                          report.status === 'รอดำเนินการ' ? 'bg-red-500 w-1/3' :
+                          report.status === 'กำลังดำเนินการ' ? 'bg-yellow-500 w-2/3' :
+                          'bg-green-500 w-full'
+                        }`}
+                      ></div>
+                    </div>
+                    <div className={`absolute bottom-4 left-0 flex items-center text-sm font-semibold ${
+                      report.status === 'รอดำเนินการ' ? 'text-red-600' :
+                      report.status === 'กำลังดำเนินการ' ? 'text-yellow-600' :
+                      'text-green-600'
+                    }`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                      </svg>
+                      {report.status}
                     </div>
                   </div>
                 </li>
@@ -216,31 +237,37 @@ const Dashboard = () => {
         <div className="bg-white bg-opacity-90 rounded-lg shadow-lg p-4 md:p-8">
           <div className="flex flex-col md:flex-row justify-between items-center mb-4">
             <h2 className="text-2xl font-bold mb-4 md:mb-0">แดชบอร์ด</h2>
-            <div className="flex flex-col md:flex-row gap-2">
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="p-2 border rounded"
-              >
-                <option value="">ทุกหมวดหมู่</option>
-                <option value="ไมค์โครโฟน">ไมค์โครโฟน</option>
-                <option value="อินเตอร์เน็ต">อินเตอร์เน็ต</option>
-                <option value="โปรเจคเตอร์">โปรเจคเตอร์</option>
-                <option value="จอแสดงภาพ">จอแสดงภาพ</option>
-                <option value="ลำโพง">ลำโพง</option>
-                <option value="เครื่องปรับอากาศ">เครื่องปรับอากาศ</option>
-                <option value="อื่นๆ">อื่นๆ</option>
-              </select>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="p-2 border rounded"
-              >
-                <option value="">ทุกสถานะ</option>
-                <option value="รอดำเนินการ">รอดำเนินการ</option>
-                <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
-                <option value="เสร็จสิ้น">เสร็จสิ้น</option>
-              </select>
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex items-center">
+                <span className="mr-2 text-base font-medium">หมวดหมู่:</span>
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="p-2 border rounded-full text-base"
+                >
+                  <option value="">ทั้งหมด</option>
+                  <option value="ไมค์โครโฟน">ไมค์โครโฟน</option>
+                  <option value="อินเตอร์เน็ต">อินเตอร์เน็ต</option>
+                  <option value="โปรเจคเตอร์">โปรเจคเตอร์</option>
+                  <option value="จอแสดงภาพ">จอแสดงภาพ</option>
+                  <option value="ลำโพง">ลำโพง</option>
+                  <option value="เครื่องปรับอากาศ">เครื่องปรับอากาศ</option>
+                  <option value="อื่นๆ">อื่นๆ</option>
+                </select>
+              </div>
+              <div className="flex items-center">
+                <span className="mr-2 text-base font-medium">สถานะ:</span>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="p-2 border rounded-full text-base"
+                >
+                  <option value="">ทั้งหมด</option>
+                  <option value="รอดำเนินการ">รอดำเนินการ</option>
+                  <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                  <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                </select>
+              </div>
             </div>
           </div>
           
