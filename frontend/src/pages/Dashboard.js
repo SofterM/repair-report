@@ -193,7 +193,7 @@ const Dashboard = () => {
                         {report.note && (
                           <div className="mt-1">
                             <p className="font-semibold">หมายเหตุ:</p>
-                            <p className="bg-yellow-100 p-2 rounded mt-1">{report.note}</p>
+                            <p className="bg-yellow-50 p-2 rounded mt-2">{report.note}</p>
                           </div>
                         )}
                       </div>
@@ -206,7 +206,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="relative h-10 mt-2 mx-6 mb-4">
-                    <div className={`absolute bottom-0 left-0 right-0 h-2 rounded-full bg-gray-200`}>
+                    <div className={`absolute bottom-4 left-0 right-0 h-2 rounded-full bg-gray-200`}>
                       <div 
                         className={`absolute top-0 left-0 h-full rounded-full ${
                           report.status === 'รอดำเนินการ' ? 'bg-red-500 w-1/3' :
@@ -215,7 +215,7 @@ const Dashboard = () => {
                         }`}
                       ></div>
                     </div>
-                    <div className={`absolute bottom-4 left-0 flex items-center text-sm font-semibold ${
+                    <div className={`absolute bottom-8 left-0 flex items-center text-sm font-semibold ${
                       report.status === 'รอดำเนินการ' ? 'text-red-600' :
                       report.status === 'กำลังดำเนินการ' ? 'text-yellow-600' :
                       'text-green-600'

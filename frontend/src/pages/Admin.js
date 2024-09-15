@@ -120,11 +120,7 @@ const Admin = () => {
                         >
                           <p className="whitespace-pre-wrap break-words">{report.details}</p>
                         </div>
-                        {report.note && (
-                          <div className="mt-2 bg-yellow-50 p-2 rounded">
-                            <p><strong>หมายเหตุ:</strong> {report.note}</p>
-                          </div>
-                        )}
+                        
                       </div>
                     </div>
                     <div className="mt-4 flex items-start space-x-2">
