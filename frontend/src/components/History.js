@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const History = () => {
   const [showAll, setShowAll] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const allCategoriesRef = useRef(null); // ใช้ ref เพื่ออ้างอิงตำแหน่งของรายการทั้งหมด
+  const allCategoriesRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768); // Consider mobile if width is less than 768px
+      setIsMobile(window.innerWidth < 768);
     };
 
     checkIsMobile();
@@ -80,6 +82,10 @@ const History = () => {
     },
   ];
 
+  const handleCategoryClick = (category) => {
+    navigate(`/dashboard?category=${encodeURIComponent(category)}`);
+  };
+
   const visibleCategories = isMobile && !showAll ? categories.slice(0, 3) : categories;
 
   const handleShowAll = () => {
@@ -91,7 +97,6 @@ const History = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 relative overflow-hidden">
-      {/* Cloud images */}
       <img src="/icons/Sky3.png" alt="Cloud 1" className="absolute bottom-48 left-0 w-64 " />
       <img src="/icons/Sky1.png" alt="Cloud 2" className="absolute top-24 right-10 w-72 " />
       <img src="/icons/Sky2.png" alt="Cloud 3" className="absolute bottom-0 right-0 w-64 " />
@@ -111,7 +116,7 @@ const History = () => {
           {visibleCategories.map((category, index) => (
             <div
               key={index}
-              className="bg-white shadow-lg flex flex-col min-h-52"
+              className="bg-white shadow-lg flex flex-col min-h-52 cursor-pointer"
               style={{
                 borderWidth: "2px",
                 borderStyle: "solid",
@@ -119,6 +124,7 @@ const History = () => {
                 borderRadius: "1rem",
                 padding: "1rem",
               }}
+              onClick={() => handleCategoryClick(category.title)}
             >
               <div className="flex items-center mb-4">
                 <img
@@ -156,7 +162,6 @@ const History = () => {
           ))}
         </div>
 
-        {/* Reference for scrolling */}
         <div ref={allCategoriesRef} className="mt-8"></div>
 
         {isMobile && !showAll && categories.length > 3 && (

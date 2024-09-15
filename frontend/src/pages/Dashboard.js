@@ -1,24 +1,31 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
 import io from 'socket.io-client';
-import { useNavigate } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 5;
 
 const Dashboard = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [userReports, setUserReports] = useState([]);
   const [allReports, setAllReports] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const { user, token } = useAuth();
-  const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [showMenu, setShowMenu] = useState(null);
-  const navigate = useNavigate();
   const [userReportsPage, setUserReportsPage] = useState(1);
   const [allReportsPage, setAllReportsPage] = useState(1);
+
+  const getCategoryFromURL = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get('category') || '';
+  };
+
+  const [categoryFilter, setCategoryFilter] = useState(getCategoryFromURL());
 
   const fetchReports = useCallback(async () => {
     try {
@@ -50,8 +57,14 @@ const Dashboard = () => {
   }, [fetchReports]);
 
   useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+    const params = new URLSearchParams(location.search);
+    if (categoryFilter) {
+      params.set('category', categoryFilter);
+    } else {
+      params.delete('category');
+    }
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+  }, [categoryFilter, location.pathname, location.search, navigate]);
 
   const deleteReport = async (id) => {
     if (window.confirm('คุณแน่ใจหรือไม่ที่จะลบรายงานนี้?')) {
@@ -266,7 +279,7 @@ const Dashboard = () => {
                   <option value="รอดำเนินการ">รอดำเนินการ</option>
                   <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
                   <option value="เสร็จสิ้น">เสร็จสิ้น</option>
-                </select>
+                  </select>
               </div>
             </div>
           </div>
