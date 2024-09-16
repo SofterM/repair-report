@@ -9,17 +9,19 @@ const cloudinary = require('cloudinary').v2;
 // อัปโหลดไฟล์ไปยัง Cloudinary
 function uploadToCloudinary(file) {
   return new Promise((resolve, reject) => {
-    let stream = cloudinary.uploader.upload_stream(
+    const uploadStream = cloudinary.uploader.upload_stream(
       { resource_type: "auto" },
       (error, result) => {
-        if (result) {
-          resolve(result);
-        } else {
+        if (error) {
+          console.error('Cloudinary upload error:', error);
           reject(error);
+        } else {
+          console.log('Cloudinary upload success:', result);
+          resolve(result);
         }
       }
     );
-    streamifier.createReadStream(file.buffer).pipe(stream);
+    streamifier.createReadStream(file.buffer).pipe(uploadStream);
   });
 }
 
@@ -48,20 +50,17 @@ router.patch('/:id', auth, upload.single('image'), async (req, res) => {
       return res.status(404).json({ message: 'Report not found' });
     }
 
-    // Check if the user is the owner of the report or an admin
     if (report.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'You do not have permission to edit this report' });
     }
 
     const updateData = { ...req.body };
 
-    // Handle image update
     if (req.file) {
       try {
         const result = await uploadToCloudinary(req.file);
         updateData.imagePath = result.secure_url;
 
-        // Delete old image from Cloudinary if it exists
         if (report.imagePath) {
           const publicId = report.imagePath.split('/').pop().split('.')[0];
           await cloudinary.uploader.destroy(publicId);
@@ -164,12 +163,10 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Report not found' });
     }
     
-    // Check if the user is the owner of the report or an admin
     if (report.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'You do not have permission to delete this report' });
     }
 
-    // Delete image from Cloudinary if it exists
     if (report.imagePath) {
       const publicId = report.imagePath.split('/').pop().split('.')[0];
       await cloudinary.uploader.destroy(publicId);

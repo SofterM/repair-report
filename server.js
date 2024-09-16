@@ -33,10 +33,9 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('Connected to MongoDB'))
 .catch((err) => console.error('Could not connect to MongoDB', err));
 
-// Make io and cloudinary accessible to our router
+// Make io accessible to our router
 app.use((req, res, next) => {
   req.io = io;
-  req.cloudinary = cloudinary;
   next();
 });
 
@@ -64,3 +63,11 @@ io.on('connection', (socket) => {
   });
 });
 
+// Test Cloudinary connection
+cloudinary.api.ping((error, result) => {
+  if (error) {
+    console.error('Cloudinary connection failed:', error);
+  } else {
+    console.log('Cloudinary connection successful:', result);
+  }
+});
