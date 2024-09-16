@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { TypeAnimation } from 'react-type-animation';
 
 const GuidePage = () => {
   return (
@@ -9,15 +10,17 @@ const GuidePage = () => {
         <h1 className="text-3xl md:text-3xl font-bold text-black mb-5">การใช้งานเว็บไซต์</h1>
         <div className="flex flex-col md:flex-row items-start justify-between">
           <div className="w-full md:w-1/2 pr-4 mb-8 md:mb-0 mt-5">
-            <p className="text-lg mb-4">
-              Customer satisfaction is our priority, and we ensure to deliver what we promise. Let us align our innovative ideas and strategies to your needs to generate unique and powerful results.
-            </p>
-            <p className="text-lg mb-4">
-              We meet challenging content requirements of your business, whether you are a startup or an enterprise. If you are looking to make a mark on the web through innovative marketing content, we can serve it best.
-            </p>
-            <p className="text-lg mb-4">
-              But who has time to run their business and pound away at the keyboard to get content on schedule and on target?
-            </p>
+          <TypeAnimation
+          sequence={[
+            '🛠️ Maintenance UP เว็บไซต์แจ้งซ่อมออนไลน์สำหรับองค์กรของคุณ 🏢 ช่วยให้การแจ้งซ่อมและติดตามสถานะการซ่อมเป็นเรื่องง่าย 📱 ผู้ใช้งานสามารถแจ้งปัญหาผ่านระบบออนไลน์ได้อย่างสะดวก พร้อมระบุรายละเอียดการแจ้งซ่อมได้อย่างครบถ้วน ✅ ไม่ว่าจะเป็นประเภทงานซ่อม ประเภทปัญหา ชื่ออุปกรณ์ที่ต้องการซ่อม ความเร่งด่วนของงาน และรายละเอียดปัญหาที่พบ พร้อมทั้งแนบไฟล์ประกอบการแจ้งซ่อมได้อีกด้วย ทำให้การจัดการงานซ่อมบำรุงเป็นเรื่องง่ายและมีประสิทธิภาพยิ่งขึ้น!',
+            500, // ระยะเวลาที่ไว้หลังข้อความจบ 1 วินาที
+          ]}
+          wrapper="p"
+          cursor={true}
+          repeat={0}
+          style={{ fontSize: '1.25rem', lineHeight: '1.75rem', marginBottom: '1rem' }}
+        />
+            
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mt-6">
               <Link
                 to="/report"

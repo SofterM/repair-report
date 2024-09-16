@@ -17,7 +17,7 @@ const HomePage = () => {
           <div className="flex flex-col lg:flex-row justify-between items-start mb-8 gap-8">
             <div className="w-full lg:w-1/2">
               <h1 className="text-3xl md:text-5xl font-bold text-purple-800 mb-4">Maintenance UP</h1>
-              <h2 className="text-2xl md:text-3xl font-semibold text-black mb-4">ACTION-PROVOKING</h2>
+              <h2 className="text-2xl md:text-3xl font-semibold text-black mb-4">University of Phayao</h2>
               <p className="text-lg md:text-xl text-black mb-8">TO HELP YOU GROW AUDIENCE</p>
               <p className="mb-8 text-black text-sm md:text-base">เว็บไซต์สำหรับรายงานสิ่งของชำรุดออนไลน์ภายในมหาวิทยาลัยพะเยา เป็นแพลตฟอร์มที่ช่วยให้ผู้แจ้งซ่อมสามารถรายงานปัญหาผ่านหน้าเว็บไซต์ได้อย่างสะดวก โดยผู้ใช้งานสามารถกรอกรายละเอียดเกี่ยวกับการแจ้งซ่อมได้ตามต้องการ นอกจากนี้ยังสามารถติดตามสถานะของการซ่อมบำรุงได้อีกด้วย</p>
             </div>
@@ -46,7 +46,7 @@ const HomePage = () => {
             <div className="w-full lg:w-1/2">
               <div className="w-full bg-white p-4 md:p-6 rounded-xl">
                 <div className="grid grid-cols-2 md:grid-cols-2 gap-4 w-full">
-                  {['ไฟตกไฟดับ', 'อินเตอร์เน็ต', 'โปรเจคเตอร์', 'จอแสดงภาพ', 'ลำโพง', 'เครื่องปรับอากาศ'].map((item, index) => (
+                  {['ไมค์โครโฟน', 'อินเตอร์เน็ต', 'โปรเจคเตอร์', 'จอแสดงภาพ', 'ลำโพง', 'เครื่องปรับอากาศ'].map((item, index) => (
                     <div key={index} className="bg-purple-600 bg-opacity-20 p-2 md:p-3 rounded-lg flex items-center shadow-sm">
                       <div className="w-4 h-4 md:w-6 md:h-6 bg-purple-600 rounded-full flex items-center justify-center mr-2 md:mr-3">
                         <svg className="w-3 h-3 md:w-4 md:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
