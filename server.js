@@ -64,11 +64,3 @@ io.on('connection', (socket) => {
   });
 });
 
-// Test Cloudinary connection
-cloudinary.api.ping((error, result) => {
-  if (error) {
-    console.error('Cloudinary connection failed:', error);
-  } else {
-    console.log('Cloudinary connection successful:', result);
-  }
-});
