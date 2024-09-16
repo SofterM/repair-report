@@ -4,6 +4,7 @@ import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
 import io from 'socket.io-client';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -235,9 +236,19 @@ const Dashboard = () => {
       </div>
     );
   };
+  
+
+  useEffect(() => {
+    // Simulate a loading delay (e.g., fetching data)
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500); // Adjust the time as needed
+
+    return () => clearTimeout(timer);
+  }, []);
 
   if (loading) {
-    return <div className="text-center mt-8">กำลังโหลด...</div>;
+    return <LoadingSpinner />; // Show loading spinner while loading
   }
 
   return (
