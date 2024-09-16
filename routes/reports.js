@@ -92,6 +92,9 @@ router.patch('/:id', auth, upload.single('image'), async (req, res) => {
 // Create a new report with image upload
 router.post('/', auth, upload.single('image'), async (req, res) => {
   try {
+    console.log('Received form data:', req.body);
+    console.log('Received file:', req.file);
+
     const reportData = {
       ...req.body,
       createdBy: req.user._id

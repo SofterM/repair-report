@@ -114,15 +114,17 @@ const ReportForm = () => {
     }
 
     try {
-      await api.post('/reports', formDataToSend, {
+      const response = await api.post('/reports', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
+      console.log('Server response:', response.data); // เพิ่ม log นี้เพื่อดูการตอบกลับจาก server
       toast.success('รายงานถูกส่งเรียบร้อยแล้ว');
       navigate('/dashboard');
     } catch (error) {
-      toast.error('เกิดข้อผิดพลาดในการส่งรายงาน');
+      console.error('Error submitting report:', error.response ? error.response.data : error);
+      toast.error('เกิดข้อผิดพลาดในการส่งรายงาน: ' + (error.response ? error.response.data.message : error.message));
     }
   };
 
