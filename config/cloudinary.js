@@ -1,9 +1,16 @@
 const cloudinary = require('cloudinary').v2;
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+cloudinary.config({ 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET 
 });
 
-module.exports = cloudinary;
+// ทดสอบการเชื่อมต่อ
+cloudinary.api.ping((error, result) => {
+  if (error) {
+    console.error('Cloudinary connection failed:', error);
+  } else {
+    console.log('Cloudinary connection successful:', result);
+  }
+});

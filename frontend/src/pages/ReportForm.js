@@ -104,7 +104,7 @@ const ReportForm = () => {
       toast.error('กรุณากรอกข้อมูลให้ครบถ้วน');
       return;
     }
-
+  
     const formDataToSend = new FormData();
     for (const key in formData) {
       formDataToSend.append(key, formData[key]);
@@ -112,19 +112,19 @@ const ReportForm = () => {
     if (image) {
       formDataToSend.append('image', image);
     }
-
+  
     try {
       const response = await api.post('/reports', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      console.log('Server response:', response.data); // เพิ่ม log นี้เพื่อดูการตอบกลับจาก server
+      console.log('Server response:', response.data);
       toast.success('รายงานถูกส่งเรียบร้อยแล้ว');
       navigate('/dashboard');
     } catch (error) {
       console.error('Error submitting report:', error.response ? error.response.data : error);
-      toast.error('เกิดข้อผิดพลาดในการส่งรายงาน: ' + (error.response ? error.response.data.message : error.message));
+      toast.error(`เกิดข้อผิดพลาดในการส่งรายงาน: ${error.response ? error.response.data.message : error.message}`);
     }
   };
 

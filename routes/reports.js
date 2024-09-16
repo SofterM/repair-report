@@ -1,3 +1,4 @@
+//repair-report\routes\reports.js
 const express = require('express');
 const router = express.Router();
 const Report = require('../models/Report');
@@ -101,8 +102,13 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     };
     
     if (req.file) {
-      const result = await uploadToCloudinary(req);
-      reportData.imagePath = result.secure_url;
+      try {
+        const result = await uploadToCloudinary(req.file);
+        reportData.imagePath = result.secure_url;
+      } catch (uploadError) {
+        console.error('Error uploading to Cloudinary:', uploadError);
+        return res.status(500).json({ message: 'Error uploading image', error: uploadError.message });
+      }
     }
 
     const report = new Report(reportData);
