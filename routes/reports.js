@@ -1,15 +1,16 @@
-//repair-report\routes\reports.js
 const express = require('express');
 const router = express.Router();
 const Report = require('../models/Report');
 const { auth, adminAuth } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 const streamifier = require('streamifier');
+const cloudinary = require('cloudinary').v2;
 
 // อัปโหลดไฟล์ไปยัง Cloudinary
-function uploadToCloudinary(req) {
+function uploadToCloudinary(file) {
   return new Promise((resolve, reject) => {
-    let stream = req.cloudinary.uploader.upload_stream(
+    let stream = cloudinary.uploader.upload_stream(
+      { resource_type: "auto" },
       (error, result) => {
         if (result) {
           resolve(result);
@@ -18,7 +19,7 @@ function uploadToCloudinary(req) {
         }
       }
     );
-    streamifier.createReadStream(req.file.buffer).pipe(stream);
+    streamifier.createReadStream(file.buffer).pipe(stream);
   });
 }
 
@@ -56,15 +57,19 @@ router.patch('/:id', auth, upload.single('image'), async (req, res) => {
 
     // Handle image update
     if (req.file) {
-      // Upload new image to Cloudinary
-      const result = await uploadToCloudinary(req);
-      updateData.imagePath = result.secure_url;
+      try {
+        const result = await uploadToCloudinary(req.file);
+        updateData.imagePath = result.secure_url;
 
-      // Delete old image from Cloudinary if it exists
-      if (report.imagePath) {
-        const publicId = report.imagePath.split('/').pop().split('.')[0];
-        await req.cloudinary.uploader.destroy(publicId);
-        console.log('Old image deleted successfully from Cloudinary');
+        // Delete old image from Cloudinary if it exists
+        if (report.imagePath) {
+          const publicId = report.imagePath.split('/').pop().split('.')[0];
+          await cloudinary.uploader.destroy(publicId);
+          console.log('Old image deleted successfully from Cloudinary');
+        }
+      } catch (uploadError) {
+        console.error('Error uploading to Cloudinary:', uploadError);
+        return res.status(500).json({ message: 'Error uploading image', error: uploadError.message });
       }
     }
 
@@ -167,7 +172,7 @@ router.delete('/:id', auth, async (req, res) => {
     // Delete image from Cloudinary if it exists
     if (report.imagePath) {
       const publicId = report.imagePath.split('/').pop().split('.')[0];
-      await req.cloudinary.uploader.destroy(publicId);
+      await cloudinary.uploader.destroy(publicId);
     }
 
     await Report.findByIdAndDelete(req.params.id);
