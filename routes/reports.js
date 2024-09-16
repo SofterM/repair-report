@@ -107,7 +107,9 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     
     if (req.file) {
       try {
+        console.log('Attempting to upload file to Cloudinary...');
         const result = await uploadToCloudinary(req.file);
+        console.log('Cloudinary upload result:', result);
         reportData.imagePath = result.secure_url;
       } catch (uploadError) {
         console.error('Error uploading to Cloudinary:', uploadError);
