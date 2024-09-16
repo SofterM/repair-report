@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import History from '../components/History';
@@ -7,24 +6,8 @@ import ProgressReport from '../components/ProgressReport';
 import Reporthome from './Reporthome';
 import Footer from '../components/Footer';
 import ScrollToTopButton from '../components/ScrollToTopButton';
-import LoadingSpinner from '../components/LoadingSpinner'; // Import the LoadingSpinner
 
 const HomePage = () => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate a loading delay (e.g., fetching data)
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500); // Adjust the time as needed
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) {
-    return <LoadingSpinner />; // Show loading spinner while loading
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       <div className="bg-gradient-to-b from-purple-400 to-white text-white flex-grow">
