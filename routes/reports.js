@@ -1,21 +1,25 @@
-// backend\routes\reports.js
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
 const Report = require('../models/Report');
 const { auth, adminAuth } = require('../middleware/auth');
+const upload = require('../middleware/upload');
+const streamifier = require('streamifier');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/') // Make sure this folder exists
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname))
-  }
-});
-
-const upload = multer({ storage: storage });
+// อัปโหลดไฟล์ไปยัง Cloudinary
+function uploadToCloudinary(req) {
+  return new Promise((resolve, reject) => {
+    let stream = req.cloudinary.uploader.upload_stream(
+      (error, result) => {
+        if (result) {
+          resolve(result);
+        } else {
+          reject(error);
+        }
+      }
+    );
+    streamifier.createReadStream(req.file.buffer).pipe(stream);
+  });
+}
 
 // Get a specific report
 router.get('/:id', auth, async (req, res) => {
@@ -29,8 +33,6 @@ router.get('/:id', auth, async (req, res) => {
     res.status(500).json({ message: 'Error fetching report', error: error.message });
   }
 });
-
-const fs = require('fs').promises;
 
 // Update report (for EditReportForm)
 router.patch('/:id', auth, upload.single('image'), async (req, res) => {
@@ -53,16 +55,16 @@ router.patch('/:id', auth, upload.single('image'), async (req, res) => {
 
     // Handle image update
     if (req.file) {
-      // Delete old image if it exists
+      // Upload new image to Cloudinary
+      const result = await uploadToCloudinary(req);
+      updateData.imagePath = result.secure_url;
+
+      // Delete old image from Cloudinary if it exists
       if (report.imagePath) {
-        try {
-          await fs.unlink(report.imagePath);
-          console.log('Old image deleted successfully');
-        } catch (err) {
-          console.error('Error deleting old image:', err);
-        }
+        const publicId = report.imagePath.split('/').pop().split('.')[0];
+        await req.cloudinary.uploader.destroy(publicId);
+        console.log('Old image deleted successfully from Cloudinary');
       }
-      updateData.imagePath = req.file.path;
     }
 
     console.log('Update data:', updateData);
@@ -96,7 +98,8 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     };
     
     if (req.file) {
-      reportData.imagePath = req.file.path;
+      const result = await uploadToCloudinary(req);
+      reportData.imagePath = result.secure_url;
     }
 
     const report = new Report(reportData);
@@ -120,23 +123,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Create a new report
-router.post('/', auth, async (req, res) => {
-  try {
-    const report = new Report({
-      ...req.body,
-      createdBy: req.user._id
-    });
-    await report.save();
-    req.io.emit('newReport', report);
-    res.status(201).json(report);
-  } catch (error) {
-    res.status(400).json({ message: 'Error creating report', error: error.message });
-  }
-});
-
-// Update report
-router.patch('/:id', auth, adminAuth, async (req, res) => {
+// Update report status (for admin)
+router.patch('/:id/status', auth, adminAuth, async (req, res) => {
   try {
     const { status, note } = req.body;
     const report = await Report.findByIdAndUpdate(
@@ -165,6 +153,12 @@ router.delete('/:id', auth, async (req, res) => {
     // Check if the user is the owner of the report or an admin
     if (report.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'You do not have permission to delete this report' });
+    }
+
+    // Delete image from Cloudinary if it exists
+    if (report.imagePath) {
+      const publicId = report.imagePath.split('/').pop().split('.')[0];
+      await req.cloudinary.uploader.destroy(publicId);
     }
 
     await Report.findByIdAndDelete(req.params.id);

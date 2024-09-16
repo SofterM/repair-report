@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
 require('dotenv').config();
@@ -10,18 +9,17 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const reportRoutes = require('./routes/reports');
 
+// Import Cloudinary configuration
+const cloudinary = require('./config/cloudinary');
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     methods: ["GET", "POST", "PATCH", "DELETE"]
   }
 });
-
-
-// Serve static files from the 'uploads' directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware
 app.use(cors());
@@ -35,9 +33,10 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('Connected to MongoDB'))
 .catch((err) => console.error('Could not connect to MongoDB', err));
 
-// Make io accessible to our router
+// Make io and cloudinary accessible to our router
 app.use((req, res, next) => {
   req.io = io;
+  req.cloudinary = cloudinary;
   next();
 });
 
@@ -63,4 +62,13 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Client disconnected');
   });
+});
+
+// Test Cloudinary connection
+cloudinary.api.ping((error, result) => {
+  if (error) {
+    console.error('Cloudinary connection failed:', error);
+  } else {
+    console.log('Cloudinary connection successful:', result);
+  }
 });
