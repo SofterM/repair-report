@@ -5,7 +5,18 @@
 [build.environment]
   REACT_APP_API_URL = "https://repair-report.onrender.com/api"
 
-[redirects]
+[[
+redirects
+]]
   from = "/*"
   to = "/index.html"
-  status = 200  
+  status = 200
+
+[[
+headers
+]]
+  for = "/*"
+    [
+headers.values
+]
+    Cache-Control = "no-store"
