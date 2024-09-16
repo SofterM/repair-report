@@ -157,19 +157,19 @@ const Admin = () => {
                     </div>
                   </div>
                   <div>
-                    {report.imagePath && (
-                      <div 
-                        className="relative w-full h-64 overflow-hidden rounded-lg shadow-md cursor-pointer" 
-                        onClick={() => setSelectedImage(`http://localhost:5000/${report.imagePath}`)}
-                      >
-                        <img 
-                          src={`http://localhost:5000/${report.imagePath}`} 
-                          alt="Report" 
-                          className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                          <span className="text-white text-lg font-semibold">Click to view full image</span>
-                        </div>
+                  {report.imagePath && (
+                    <div 
+                      className="relative w-full h-64 overflow-hidden rounded-lg shadow-md cursor-pointer" 
+                      onClick={() => setSelectedImage(report.imagePath)}
+                    >
+                      <img 
+                        src={report.imagePath} 
+                        alt="Report" 
+                        className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <span className="text-white text-lg font-semibold">Click to view full image</span>
+                      </div>
                       </div>
                     )}
                   </div>

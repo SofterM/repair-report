@@ -50,7 +50,7 @@ const EditReportForm = () => {
           reportDate: reportData.reportDate.split('T')[0],
         });
         if (reportData.imagePath) {
-          setPreviewUrl(`http://localhost:5000/${reportData.imagePath}`);
+          setPreviewUrl(reportData.imagePath);
         }
         setLoading(false);
       } catch (error) {
