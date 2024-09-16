@@ -39,4 +39,4 @@ Compass ด้วยนะครับ
 
 
 
-// netlify deploy --prod // @M
+// npm install -g netlify-cli netlify login netlify link  npm run build netlify deploy --prod// @M 

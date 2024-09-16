@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../contexts/AuthContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const buildings = ['UB', 'CE', 'ICT', 'PKY'];
 const categories = [
@@ -179,7 +180,7 @@ const EditReportForm = () => {
   };
 
   if (loading) {
-    return <div className="text-center mt-8">กำลังโหลด...</div>;
+    return <LoadingSpinner />; // Show loading spinner while loading
   }
 
   return (
