@@ -55,10 +55,11 @@ const ProgressReportLayout = () => {
            <img src="/icons/tool.png" alt="Decorative tools" className="w-full h-full object-contain transform scale-125 translate-x-1/4 translate-y-1/4" />
         </div>
         {/* Gear for mobile view */}
-        <div className="absolute -top-40 left-1/2 transform -translate-x-1/2 w-64 h-64 md:hidden block">
+        {/* Mobile view */}
+        <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-32 h-32 md:hidden">
           <img src="/icons/gear.png" alt="Decorative gear" className="w-full h-full object-contain transform scale-100" />
         </div>
-        
+       
         {/* Main content */}
         <div className="relative z-10 text-center mb-12 flex items-center justify-center mt-24">
           <div>

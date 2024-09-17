@@ -133,17 +133,12 @@ const Reporthome = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!isLoggedIn) {
-      setShowLoginPopup(true);
-      return;
-    }
+  const handleSubmit = async () => {
     if (!validate()) {
       toast.error('กรุณากรอกข้อมูลให้ครบถ้วน');
       return;
     }
-
+  
     const formDataToSend = new FormData();
     for (const key in formData) {
       formDataToSend.append(key, formData[key]);
@@ -151,7 +146,7 @@ const Reporthome = () => {
     if (image) {
       formDataToSend.append('image', image);
     }
-
+  
     try {
       await api.post('/reports', formDataToSend, {
         headers: {
@@ -331,14 +326,15 @@ const Reporthome = () => {
           </div>
 
           <button 
-            type="submit" 
-            className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
-              isFormValid
-                ? 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700'
-                : 'bg-gradient-to-r from-pink-500 to-purple-600 opacity-50 cursor-not-allowed'
-            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500`}
-            onClick={handleInteraction}
-            disabled={!isFormValid}
+            type="button" 
+            className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500`}
+            onClick={() => {
+              if (isLoggedIn) {
+                handleSubmit();
+              } else {
+                navigate('/login');
+              }
+            }}
           >
             {isLoggedIn ? 'บันทึกรายงาน' : 'กรุณาเข้าสู่ระบบก่อนส่งรายงาน'}
           </button>
