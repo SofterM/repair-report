@@ -14,6 +14,7 @@ Compass ด้วยนะครับ
 
 * npm start
 
+// npm install mongoose // @M
 
 แบบนี้งับ
 ต่อมาจะมาลง react ที่ frontend กันนะงับเพราะ github ไม่อัพไปด้วยเพราะไฟล์มันใหญ่งับ
