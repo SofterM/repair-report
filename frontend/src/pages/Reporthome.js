@@ -52,44 +52,42 @@ const Reporthome = () => {
   };
 
   const handleChange = (e) => {
-    if (!isLoggedIn) {
-      setShowLoginPopup(true);
-      return;
+    if (isLoggedIn) {
+      const { name, value } = e.target;
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleImageChange = (e) => {
-    if (!isLoggedIn) {
+    if (isLoggedIn) {
+      const file = e.target.files[0];
+      if (file) {
+        setImage(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewUrl(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    } else {
       setShowLoginPopup(true);
-      return;
-    }
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
     }
   };
 
   const handleImageDelete = (e) => {
     e.stopPropagation();
-    if (!isLoggedIn) {
+    if (isLoggedIn) {
+      setImage(null);
+      setPreviewUrl(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } else {
       setShowLoginPopup(true);
-      return;
-    }
-    setImage(null);
-    setPreviewUrl(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
     }
   };
 
@@ -101,18 +99,18 @@ const Reporthome = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!isLoggedIn) {
+    if (isLoggedIn) {
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        setImage(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewUrl(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    } else {
       setShowLoginPopup(true);
-      return;
-    }
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -196,7 +194,8 @@ const Reporthome = () => {
                 value={formData.name}
                 onChange={handleChange}
                 onClick={handleInteraction}
-                className={`w-full p-2 border rounded-md ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                readOnly={!isLoggedIn}
+                className={`w-full p-2 border rounded-md ${errors.name ? 'border-red-500' : 'border-gray-300'} ${!isLoggedIn ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               />
               {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
@@ -208,7 +207,8 @@ const Reporthome = () => {
                 value={formData.building}
                 onChange={handleChange}
                 onClick={handleInteraction}
-                className={`w-full p-2 border rounded-md ${errors.building ? 'border-red-500' : 'border-gray-300'}`}
+                disabled={!isLoggedIn}
+                className={`w-full p-2 border rounded-md ${errors.building ? 'border-red-500' : 'border-gray-300'} ${!isLoggedIn ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               >
                 <option value="">เลือกอาคาร</option>
                 {buildings.map(building => (
@@ -229,7 +229,8 @@ const Reporthome = () => {
                 value={formData.roomNumber}
                 onChange={handleChange}
                 onClick={handleInteraction}
-                className={`w-full p-2 border rounded-md ${errors.roomNumber ? 'border-red-500' : 'border-gray-300'}`}
+                readOnly={!isLoggedIn}
+                className={`w-full p-2 border rounded-md ${errors.roomNumber ? 'border-red-500' : 'border-gray-300'} ${!isLoggedIn ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               />
               {errors.roomNumber && <p className="text-red-500 text-sm mt-1">{errors.roomNumber}</p>}
             </div>
@@ -241,7 +242,8 @@ const Reporthome = () => {
                 value={formData.category}
                 onChange={handleChange}
                 onClick={handleInteraction}
-                className={`w-full p-2 border rounded-md ${errors.category ? 'border-red-500' : 'border-gray-300'}`}
+                disabled={!isLoggedIn}
+                className={`w-full p-2 border rounded-md ${errors.category ? 'border-red-500' : 'border-gray-300'} ${!isLoggedIn ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               >
                 <option value="">เลือกหมวดหมู่</option>
                 {categories.map(category => (
@@ -260,8 +262,9 @@ const Reporthome = () => {
               value={formData.details}
               onChange={handleChange}
               onClick={handleInteraction}
+              readOnly={!isLoggedIn}
               rows={4}
-              className={`w-full p-2 border rounded-md ${errors.details ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full p-2 border rounded-md ${errors.details ? 'border-red-500' : 'border-gray-300'} ${!isLoggedIn ? 'bg-gray-100 cursor-not-allowed' : ''}`}
             ></textarea>
             {errors.details && <p className="text-red-500 text-sm mt-1">{errors.details}</p>}
           </div>
@@ -269,7 +272,7 @@ const Reporthome = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">แนบรูปภาพที่ต้องการรายงาน</label>
             <div 
-              className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center"
+              className={`border-2 border-dashed border-gray-300 rounded-lg p-4 text-center ${!isLoggedIn ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onClick={handleInteraction}
@@ -282,6 +285,7 @@ const Reporthome = () => {
                 accept="image/*"
                 className="hidden"
                 ref={fileInputRef}
+                disabled={!isLoggedIn}
               />
               {previewUrl ? (
                 <div className="mt-2 relative">
@@ -297,7 +301,7 @@ const Reporthome = () => {
                   </button>
                 </div>
               ) : (
-                <label htmlFor="image" className="cursor-pointer flex flex-col items-center justify-center h-32">
+                <label htmlFor="image" className={`cursor-pointer flex flex-col items-center justify-center h-32 ${!isLoggedIn ? 'cursor-not-allowed' : ''}`}>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
@@ -305,66 +309,67 @@ const Reporthome = () => {
                 </label>
               )}
             </div>
-          {image && (
-            <div className="mt-2 text-sm text-gray-600">
-              ชื่อไฟล์: {image.name} (ขนาด: {formatFileSize(image.size)})
-            </div>
-          )}
-        </div>
+            {image && (
+              <div className="mt-2 text-sm text-gray-600">
+                ชื่อไฟล์: {image.name} (ขนาด: {formatFileSize(image.size)})
+              </div>
+            )}
+          </div>
 
-        <div>
-        <label htmlFor="reportDate" className="block text-sm font-medium text-gray-700 mb-1">วันที่รายงาน</label>
-          <input
-            type="date"
-            id="reportDate"
-            name="reportDate"
-            value={formData.reportDate}
-            onChange={handleChange}
+          <div>
+            <label htmlFor="reportDate" className="block text-sm font-medium text-gray-700 mb-1">วันที่รายงาน</label>
+            <input
+              type="date"
+              id="reportDate"
+              name="reportDate"
+              value={formData.reportDate}
+              onChange={handleChange}
+              onClick={handleInteraction}
+              readOnly={!isLoggedIn}
+              className={`w-full p-2 border rounded-md border-gray-300 ${!isLoggedIn ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
+              isFormValid
+                ? 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700'
+                : 'bg-gradient-to-r from-pink-500 to-purple-600 opacity-50 cursor-not-allowed'
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500`}
             onClick={handleInteraction}
-            className="w-full p-2 border rounded-md border-gray-300"
-          />
-        </div>
-
-        <button 
-          type="submit" 
-          className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
-            isFormValid
-              ? 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700'
-              : 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 opacity-50 cursor-not-allowed'
-          } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500`}
-          onClick={handleInteraction}
-          disabled={!isFormValid}
-        >
-          {isLoggedIn ? 'บันทึกรายงาน' : 'กรุณาเข้าสู่ระบบก่อนส่งรายงาน'}
-        </button>
-      </form>
-    </div>
-    {showLoginPopup && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-8 rounded-lg max-w-sm w-full shadow-xl relative">
-          <button
-            onClick={() => setShowLoginPopup(false)}
-            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            disabled={!isFormValid}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            {isLoggedIn ? 'บันทึกรายงาน' : 'กรุณาเข้าสู่ระบบก่อนส่งรายงาน'}
           </button>
-          <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">กรุณาเข้าสู่ระบบ</h2>
-          <p className="mb-6 text-center text-gray-600">คุณจำเป็นต้องเข้าสู่ระบบก่อนที่จะสามารถส่งรายงานได้</p>
-          <div className="flex justify-center">
+        </form>
+      </div>
+      {showLoginPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg max-w-sm w-full shadow-xl relative">
             <button
-              onClick={handleLoginRedirect}
-              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-2 rounded-full font-semibold transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+              onClick={() => setShowLoginPopup(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
             >
-              ไปยังหน้าเข้าสู่ระบบ
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
+            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">กรุณาเข้าสู่ระบบ</h2>
+            <p className="mb-6 text-center text-gray-600">คุณจำเป็นต้องเข้าสู่ระบบก่อนที่จะสามารถส่งรายงานได้</p>
+            <div className="flex justify-center">
+              <button
+                onClick={handleLoginRedirect}
+                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-2 rounded-full font-semibold transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+              >
+                ไปยังหน้าเข้าสู่ระบบ
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
 };
 
 export default Reporthome;
