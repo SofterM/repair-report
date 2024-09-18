@@ -30,6 +30,8 @@ const Reporthome = () => {
   const [errors, setErrors] = useState({});
   const fileInputRef = useRef(null);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cooldown, setCooldown] = useState(false);
 
   const navigate = useNavigate();
 
@@ -138,7 +140,8 @@ const Reporthome = () => {
       toast.error('กรุณากรอกข้อมูลให้ครบถ้วน');
       return;
     }
-  
+
+    setIsSubmitting(true);
     const formDataToSend = new FormData();
     for (const key in formData) {
       formDataToSend.append(key, formData[key]);
@@ -146,7 +149,7 @@ const Reporthome = () => {
     if (image) {
       formDataToSend.append('image', image);
     }
-  
+
     try {
       await api.post('/reports', formDataToSend, {
         headers: {
@@ -157,11 +160,15 @@ const Reporthome = () => {
       navigate('/dashboard');
     } catch (error) {
       toast.error('เกิดข้อผิดพลาดในการส่งรายงาน');
+      setIsSubmitting(false);
+      setCooldown(true);
+      setTimeout(() => {
+        setCooldown(false);
+      }, 3000);
     }
   };
 
-  const isFormValid = Object.values(formData).every(value => value.trim() !== '') && isLoggedIn;
-
+  
   const handleLoginRedirect = () => {
     setShowLoginPopup(false);
     navigate('/login');
@@ -178,7 +185,7 @@ const Reporthome = () => {
           </p>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">ชื่อ-สกุล</label>
@@ -326,18 +333,25 @@ const Reporthome = () => {
           </div>
 
           <button 
-            type="button" 
-            className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500`}
-            onClick={() => {
-              if (isLoggedIn) {
-                handleSubmit();
-              } else {
-                navigate('/login');
-              }
-            }}
-          >
-            {isLoggedIn ? 'บันทึกรายงาน' : 'กรุณาเข้าสู่ระบบก่อนส่งรายงาน'}
-          </button>
+          type="button" 
+          className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 ${(isSubmitting || cooldown) && 'opacity-50 cursor-not-allowed'}`}
+          onClick={() => {
+            if (isLoggedIn && !isSubmitting && !cooldown) {
+              handleSubmit();
+            } else if (!isLoggedIn) {
+              navigate('/login');
+            }
+          }}
+          disabled={isSubmitting || cooldown}
+        >
+          {isLoggedIn 
+            ? isSubmitting 
+              ? 'กำลังส่งรายงาน...' 
+              : cooldown 
+                ? 'กรุณารอสักครู่...' 
+                : 'บันทึกรายงาน'
+            : 'กรุณาเข้าสู่ระบบก่อนส่งรายงาน'}
+        </button>
         </form>
       </div>
       {showLoginPopup && (
