@@ -9,10 +9,11 @@ import Dashboard from './pages/Dashboard';
 import ReportForm from './pages/ReportForm';
 import EditReportForm from './pages/EditReportForm';
 import Admin from './pages/Admin';
+import AdminEdit from './pages/AdminEdit'; // เพิ่ม import สำหรับ AdminEdit
 import ProtectedRoute from './components/ProtectedRoute';
 import ToastNotification from './components/ToastNotification';
 import PageTransition from './components/PageTransition';
-import NotFound from './pages/NotFound'; // เพิ่ม import สำหรับหน้า 404
+import NotFound from './pages/NotFound';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -42,7 +43,12 @@ const AnimatedRoutes = () => {
             <PageTransition><Admin /></PageTransition>
           </ProtectedRoute>
         } />
-        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} /> {/* เพิ่ม route สำหรับหน้า 404 */}
+        <Route path="/adminedit/:id" element={
+          <ProtectedRoute requiredRole="admin">
+            <PageTransition><AdminEdit /></PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
   );

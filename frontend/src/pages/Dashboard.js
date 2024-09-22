@@ -87,6 +87,10 @@ const Dashboard = () => {
     navigate(`/edit-report/${id}`);
   };
 
+  const adminEditReport = (id) => {
+    navigate(`/adminedit/${id}`);
+  };
+
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('th-TH', options);
@@ -156,7 +160,7 @@ const Dashboard = () => {
                         <span className="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1.5 rounded-full">
                           {formatDate(report.reportDate)}
                         </span>
-                        {isUserReports && (
+                        {(user.role === 'admin' || (isUserReports && report.createdBy === user._id)) && (
                           <div className="relative">
                             <button
                               onClick={() => setShowMenu(showMenu === report._id ? null : report._id)}
@@ -168,18 +172,29 @@ const Dashboard = () => {
                             </button>
                             {showMenu === report._id && (
                               <div className="absolute top-10 right-0 bg-white p-2 shadow rounded-lg z-10">
-                                <button
-                                  onClick={() => editReport(report._id)}
-                                  className="block w-full text-left px-2 py-1 hover:bg-gray-100 rounded whitespace-nowrap"
-                                >
-                                  แก้ไขรายงาน
-                                </button>
-                                <button
-                                  onClick={() => deleteReport(report._id)}
-                                  className="block w-full text-left px-2 py-1 hover:bg-gray-100 text-red-500 rounded whitespace-nowrap"
-                                >
-                                  ลบรายงาน
-                                </button>
+                                {user.role === 'admin' ? (
+                                  <button
+                                    onClick={() => adminEditReport(report._id)}
+                                    className="block w-full text-left px-2 py-1 hover:bg-gray-100 rounded whitespace-nowrap"
+                                  >
+                                    Admin Edit
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => editReport(report._id)}
+                                    className="block w-full text-left px-2 py-1 hover:bg-gray-100 rounded whitespace-nowrap"
+                                  >
+                                    แก้ไขรายงาน
+                                  </button>
+                                )}
+                                {report.createdBy === user._id && (
+                                  <button
+                                    onClick={() => deleteReport(report._id)}
+                                    className="block w-full text-left px-2 py-1 hover:bg-gray-100 text-red-500 rounded whitespace-nowrap"
+                                  >
+                                    ลบรายงาน
+                                  </button>
+                                )}
                               </div>
                             )}
                           </div>
@@ -236,19 +251,9 @@ const Dashboard = () => {
       </div>
     );
   };
-  
-
-  useEffect(() => {
-    // Simulate a loading delay (e.g., fetching data)
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500); // Adjust the time as needed
-
-    return () => clearTimeout(timer);
-  }, []);
 
   if (loading) {
-    return <LoadingSpinner />; // Show loading spinner while loading
+    return <LoadingSpinner />;
   }
 
   return (
@@ -275,6 +280,7 @@ const Dashboard = () => {
                   <option value="โปรเจคเตอร์">โปรเจคเตอร์</option>
                   <option value="จอแสดงภาพ">จอแสดงภาพ</option>
                   <option value="ลำโพง">ลำโพง</option>
+                  <option value="ลำโพง">ลำโพง</option>
                   <option value="เครื่องปรับอากาศ">เครื่องปรับอากาศ</option>
                   <option value="อื่นๆ">อื่นๆ</option>
                 </select>
@@ -290,7 +296,7 @@ const Dashboard = () => {
                   <option value="รอดำเนินการ">รอดำเนินการ</option>
                   <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
                   <option value="เสร็จสิ้น">เสร็จสิ้น</option>
-                  </select>
+                </select>
               </div>
             </div>
           </div>
