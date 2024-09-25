@@ -1,0 +1,6 @@
+[build]
+  command = "cd frontend && npm run build"
+  publish = "frontend/build"
+
+[build.environment]
+  REACT_APP_API_URL = "https://repair-report.onrender.com/api"

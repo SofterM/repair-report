@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../utils/api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const AuthContext = createContext();
 
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // หรือ component loading ที่คุณต้องการ
+    return <LoadingSpinner />; // Show loading spinner while loading
   }
 
   return (

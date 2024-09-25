@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
-const Navbar = ({ show = true }) => {
+const Navbar = ({ show = true, notificationCount = 0 }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn, user, logout } = useAuth();
@@ -20,7 +20,7 @@ const Navbar = ({ show = true }) => {
     return null;
   }
 
-  const NavLink = ({ to, children, mobile = false }) => {
+  const NavLink = ({ to, children, mobile = false, badge = null }) => {
     const isActive = location.pathname === to;
     const baseClasses = isActive
       ? 'font-bold text-purple-600'
@@ -31,12 +31,17 @@ const Navbar = ({ show = true }) => {
     return (
       <Link
         to={to}
-        className={`${baseClasses} ${mobileClasses} ${desktopClasses}`}
+        className={`${baseClasses} ${mobileClasses} ${desktopClasses} relative`}
         onClick={() => mobile && setIsOpen(false)}
       >
         {children}
         {isActive && !mobile && (
           <span className="absolute bottom-0 left-0 w-full h-0.5 bg-purple-600"></span>
+        )}
+        {badge && (
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            {badge}
+          </span>
         )}
       </Link>
     );
@@ -61,7 +66,7 @@ const Navbar = ({ show = true }) => {
         )}
       </button>
 
-      {/* Desktop navbar (original version) */}
+      {/* Desktop navbar */}
       <div className="hidden md:flex flex-row justify-between items-center">
         <div className="w-48 h-48 relative">
           <Link to="/">
@@ -79,7 +84,7 @@ const Navbar = ({ show = true }) => {
           {isLoggedIn ? (
             <>
               {user && user.role === 'admin' && (
-                <NavLink to="/admin">จัดการระบบ</NavLink>
+                <NavLink to="/admin" badge={notificationCount > 0 ? notificationCount : null}>จัดการระบบ</NavLink>
               )}
               <button onClick={handleLogout} className="bg-purple-500 text-white px-4 py-2 rounded-full hover:bg-purple-600 text-base">ออกจากระบบ</button>
             </>
@@ -92,7 +97,7 @@ const Navbar = ({ show = true }) => {
         </nav>
       </div>
 
-      {/* Mobile navbar (improved version) */}
+      {/* Mobile navbar */}
       <nav
         className={`md:hidden bg-white shadow-lg transition-all duration-300 ease-in-out ${
           isOpen ? 'w-64' : 'w-0'
@@ -104,7 +109,7 @@ const Navbar = ({ show = true }) => {
             <NavLink to="/report" mobile>แจ้งของชำรุด</NavLink>
             <NavLink to="/dashboard" mobile>รายการทั้งหมด</NavLink>
             {isLoggedIn && user && user.role === 'admin' && (
-              <NavLink to="/admin" mobile>จัดการระบบ</NavLink>
+              <NavLink to="/admin" mobile badge={notificationCount > 0 ? notificationCount : null}>จัดการระบบ</NavLink>
             )}
           </div>
           <div className="p-4 border-t border-gray-200">

@@ -28,6 +28,8 @@ const ReportForm = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [errors, setErrors] = useState({});
   const fileInputRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cooldown, setCooldown] = useState(false);
 
   const navigate = useNavigate();
 
@@ -100,11 +102,11 @@ const ReportForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) {
-      toast.error('กรุณากรอกข้อมูลให้ครบถ้วน');
+    if (!validate() || isSubmitting || cooldown) {
       return;
     }
 
+    setIsSubmitting(true);
     const formDataToSend = new FormData();
     for (const key in formData) {
       formDataToSend.append(key, formData[key]);
@@ -114,15 +116,22 @@ const ReportForm = () => {
     }
 
     try {
-      await api.post('/reports', formDataToSend, {
+      const response = await api.post('/reports', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
+      console.log('Server response:', response.data);
       toast.success('รายงานถูกส่งเรียบร้อยแล้ว');
       navigate('/dashboard');
     } catch (error) {
-      toast.error('เกิดข้อผิดพลาดในการส่งรายงาน');
+      console.error('Error submitting report:', error.response ? error.response.data : error);
+      toast.error(`เกิดข้อผิดพลาดในการส่งรายงาน: ${error.response ? error.response.data.message : error.message}`);
+      setIsSubmitting(false);
+      setCooldown(true);
+      setTimeout(() => {
+        setCooldown(false);
+      }, 3000);
     }
   };
 
@@ -289,16 +298,20 @@ const ReportForm = () => {
           </div>
 
           <button 
-            type="submit" 
-            className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
-              isFormValid
-                ? 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700'
-                : 'bg-gray-300 cursor-not-allowed'
-            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500`}
-            disabled={!isFormValid}
-          >
-            บันทึกรายงาน
-          </button>
+                type="submit" 
+                className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
+                  isFormValid && !isSubmitting && !cooldown
+                    ? 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700'
+                    : 'bg-gray-300 cursor-not-allowed'
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500`}
+                disabled={!isFormValid || isSubmitting || cooldown}
+              >
+                {isSubmitting 
+                  ? 'กำลังส่งรายงาน...' 
+                  : cooldown 
+                    ? 'กรุณารอสักครู่...' 
+                    : 'บันทึกรายงาน'}
+              </button>
         </form>
       </div>
     </div>

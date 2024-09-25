@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../contexts/AuthContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const buildings = ['UB', 'CE', 'ICT', 'PKY'];
 const categories = [
@@ -50,7 +51,7 @@ const EditReportForm = () => {
           reportDate: reportData.reportDate.split('T')[0],
         });
         if (reportData.imagePath) {
-          setPreviewUrl(`http://localhost:5000/${reportData.imagePath}`);
+          setPreviewUrl(reportData.imagePath);
         }
         setLoading(false);
       } catch (error) {
@@ -104,6 +105,10 @@ const EditReportForm = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const handleCancel = () => {
+    navigate('/dashboard');
   };
 
   const handleDragOver = (e) => {
@@ -175,7 +180,7 @@ const EditReportForm = () => {
   };
 
   if (loading) {
-    return <div className="text-center mt-8">กำลังโหลด...</div>;
+    return <LoadingSpinner />; // Show loading spinner while loading
   }
 
   return (
@@ -320,13 +325,22 @@ const EditReportForm = () => {
                 className="w-full p-2 border rounded-md border-gray-300"
               />
             </div>
-
+            <div className="flex space-x-24">
             <button 
-              type="submit" 
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-            >
-              บันทึกการแก้ไข
-            </button>
+                type="button" 
+                onClick={handleCancel}
+                className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                ยกเลิก
+              </button>
+            <button 
+                type="submit" 
+                className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              >
+                บันทึกการแก้ไข
+              </button>
+              
+            </div>
           </form>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from '../components/Navbar';
 
@@ -150,8 +151,11 @@ const Login = () => {
             </button>
           </form>
           <p className="mt-4 text-center text-sm text-black">
-            ยังไม่มีบัญชี? <a href="/register" className="font-medium text-purple-700 hover:text-purple-400">สมัครสมาชิก</a>
-          </p>
+      ยังไม่มีบัญชี?{' '}
+      <Link to="/register" className="font-medium text-purple-700 hover:text-purple-400">
+        สมัครสมาชิก
+      </Link>
+    </p>
         </div>
         <div className="w-full md:w-1/2 p-8 flex items-center justify-center" style={{ transform: 'scale(0.9)' }}>
           <img src="/login.png" alt="Login illustration" className="max-w-full h-auto" style={{ width: '90%', height: 'auto' }} />
